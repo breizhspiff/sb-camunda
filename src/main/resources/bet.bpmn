@@ -53,7 +53,7 @@
     <bpmn:sequenceFlow id="validation_is_ok_no" name="no" sourceRef="validation_is_ok" targetRef="bet_canceled">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!validated}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="do_a_bet" name="do a bet">
+    <bpmn:userTask id="do_a_bet" name="do a bet" camunda:assignee="ronan">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="firstname" label="First name" type="string" />
