@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0l4wf26" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.1">
+  <bpmn:message id="Message_1din5ld" name="dfbdbdb" />
+  <bpmn:collaboration id="expense_validation_models">
+    <bpmn:participant id="expense_validation_pool" name="Expense validation" processRef="expense_validation" />
+  </bpmn:collaboration>
+  <bpmn:process id="expense_validation" name="Expense Validation" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_0qxd956">
+      <bpmn:lane id="requester_lane" name="Requester">
+        <bpmn:flowNodeRef>new_expense</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>encode_the_expense</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>bet_is_too_high</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>validation_is_ok</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0mlf30m</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>expense_rejected</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>expense_validated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>send_ok_email</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>send_ko_email</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>check_amount</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_04wge3q</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="manager_lane" name="Manager">
+        <bpmn:flowNodeRef>validate_amount</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="SequenceFlow_05qct0v" sourceRef="new_expense" targetRef="encode_the_expense" />
+    <bpmn:startEvent id="new_expense" name="New expense">
+      <bpmn:outgoing>SequenceFlow_05qct0v</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="encode_the_expense" name="Encode the expense" camunda:assignee="ronan">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="firstname" label="First name" type="string" />
+          <camunda:formField id="lastname" label="Last name" type="string" />
+          <camunda:formField id="amount" label="Amount" type="long" />
+          <camunda:formField id="details" label="Details" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_05qct0v</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1wku0d1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1wku0d1" sourceRef="encode_the_expense" targetRef="Task_04wge3q" />
+    <bpmn:sequenceFlow id="SequenceFlow_0dts8bv" sourceRef="check_amount" targetRef="bet_is_too_high" />
+    <bpmn:exclusiveGateway id="bet_is_too_high" name="is too high ?">
+      <bpmn:incoming>SequenceFlow_0dts8bv</bpmn:incoming>
+      <bpmn:outgoing>bet_is_to_high_no</bpmn:outgoing>
+      <bpmn:outgoing>bet_is_to_high_yes</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="validate_amount" name="Validate the amount">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="firstname" label="Firstname" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="lastname" label="Lastname" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="amount" label="Amount" type="long">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="details" label="Details" type="string">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="validated" label="Validate ?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>bet_is_to_high_yes</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ghp0zf</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="validation_is_ok" name="is ok ?">
+      <bpmn:incoming>SequenceFlow_1ghp0zf</bpmn:incoming>
+      <bpmn:outgoing>validation_is_ok_yes</bpmn:outgoing>
+      <bpmn:outgoing>validation_is_ok_no</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0mlf30m">
+      <bpmn:incoming>validation_is_ok_yes</bpmn:incoming>
+      <bpmn:incoming>bet_is_to_high_no</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1la1d6n</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="expense_rejected" name="Expense rejected">
+      <bpmn:incoming>SequenceFlow_0b7fvo4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="expense_validated" name="Expense validated">
+      <bpmn:incoming>SequenceFlow_0r4x803</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="send_ok_email" name="send OK email" camunda:type="external" camunda:topic="ok-email">
+      <bpmn:incoming>SequenceFlow_1la1d6n</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0r4x803</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sendTask id="send_ko_email" name="Send KO email" camunda:delegateExpression="${sendKoEmailDelegate}">
+      <bpmn:incoming>validation_is_ok_no</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0b7fvo4</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:sequenceFlow id="bet_is_to_high_no" name="no" sourceRef="bet_is_too_high" targetRef="ExclusiveGateway_0mlf30m">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!validate}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="bet_is_to_high_yes" name="yes" sourceRef="bet_is_too_high" targetRef="validate_amount">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${validate}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1ghp0zf" sourceRef="validate_amount" targetRef="validation_is_ok" />
+    <bpmn:sequenceFlow id="validation_is_ok_yes" name="yes" sourceRef="validation_is_ok" targetRef="ExclusiveGateway_0mlf30m">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${validated}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="validation_is_ok_no" name="no" sourceRef="validation_is_ok" targetRef="send_ko_email">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!validated}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1la1d6n" sourceRef="ExclusiveGateway_0mlf30m" targetRef="send_ok_email" />
+    <bpmn:sequenceFlow id="SequenceFlow_0b7fvo4" sourceRef="send_ko_email" targetRef="expense_rejected" />
+    <bpmn:sequenceFlow id="SequenceFlow_0r4x803" sourceRef="send_ok_email" targetRef="expense_validated" />
+    <bpmn:businessRuleTask id="check_amount" name="Check the amount" camunda:resultVariable="validate" camunda:decisionRef="check_amount" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>SequenceFlow_01cpv1q</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0dts8bv</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="SequenceFlow_01cpv1q" sourceRef="Task_04wge3q" targetRef="check_amount" />
+    <bpmn:manualTask id="Task_04wge3q" name="task">
+      <bpmn:incoming>SequenceFlow_1wku0d1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_01cpv1q</bpmn:outgoing>
+    </bpmn:manualTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="expense_validation_models">
+      <bpmndi:BPMNShape id="Participant_1jlfrp6_di" bpmnElement="expense_validation_pool">
+        <dc:Bounds x="11" y="60" width="1197" height="436" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="new_expense">
+        <dc:Bounds x="79" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="64" y="145" width="67" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0lrx36c_di" bpmnElement="validate_amount">
+        <dc:Bounds x="736" y="380" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0uexctt_di" bpmnElement="expense_validated">
+        <dc:Bounds x="1133" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1107" y="145" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0rzpakq_di" bpmnElement="validation_is_ok" isMarkerVisible="true">
+        <dc:Bounds x="858" y="223" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="816" y="241" width="32" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0mlf30m_di" bpmnElement="ExclusiveGateway_0mlf30m" isMarkerVisible="true">
+        <dc:Bounds x="858" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1pkfqpo_di" bpmnElement="expense_rejected">
+        <dc:Bounds x="1133" y="230" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1109" y="273" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0a2qyrj_di" bpmnElement="encode_the_expense">
+        <dc:Bounds x="180" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BusinessRuleTask_0dw7fv9_di" bpmnElement="check_amount">
+        <dc:Bounds x="483" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1nzkjin_di" bpmnElement="bet_is_too_high" isMarkerVisible="true">
+        <dc:Bounds x="656" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="651" y="71" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ebqd7v_di" bpmnElement="bet_is_to_high_yes">
+        <di:waypoint x="681" y="145" />
+        <di:waypoint x="681" y="420" />
+        <di:waypoint x="736" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="692" y="241" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1pt91ju_di" bpmnElement="bet_is_to_high_no">
+        <di:waypoint x="706" y="120" />
+        <di:waypoint x="858" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="779" y="101" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dts8bv_di" bpmnElement="SequenceFlow_0dts8bv">
+        <di:waypoint x="583" y="120" />
+        <di:waypoint x="656" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ufwaxm_di" bpmnElement="validation_is_ok_no">
+        <di:waypoint x="908" y="248" />
+        <di:waypoint x="966" y="248" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="925" y="229" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0xov3pk_di" bpmnElement="validation_is_ok_yes">
+        <di:waypoint x="883" y="223" />
+        <di:waypoint x="883" y="145" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="889" y="181" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1la1d6n_di" bpmnElement="SequenceFlow_1la1d6n">
+        <di:waypoint x="908" y="120" />
+        <di:waypoint x="966" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ghp0zf_di" bpmnElement="SequenceFlow_1ghp0zf">
+        <di:waypoint x="836" y="420" />
+        <di:waypoint x="883" y="420" />
+        <di:waypoint x="883" y="273" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1wku0d1_di" bpmnElement="SequenceFlow_1wku0d1">
+        <di:waypoint x="280" y="120" />
+        <di:waypoint x="332" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_05qct0v_di" bpmnElement="SequenceFlow_05qct0v">
+        <di:waypoint x="115" y="120" />
+        <di:waypoint x="180" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Lane_08tgaix_di" bpmnElement="requester_lane">
+        <dc:Bounds x="41" y="60" width="1167" height="276" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0z1vzjq_di" bpmnElement="manager_lane">
+        <dc:Bounds x="41" y="336" width="1167" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0b7fvo4_di" bpmnElement="SequenceFlow_0b7fvo4">
+        <di:waypoint x="1066" y="248" />
+        <di:waypoint x="1133" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0r4x803_di" bpmnElement="SequenceFlow_0r4x803">
+        <di:waypoint x="1066" y="120" />
+        <di:waypoint x="1133" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SendTask_004687s_di" bpmnElement="send_ok_email">
+        <dc:Bounds x="966" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_1yl12hs_di" bpmnElement="send_ko_email">
+        <dc:Bounds x="966" y="208" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_01cpv1q_di" bpmnElement="SequenceFlow_01cpv1q">
+        <di:waypoint x="432" y="120" />
+        <di:waypoint x="483" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ManualTask_1qlv8fa_di" bpmnElement="Task_04wge3q">
+        <dc:Bounds x="332" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" id="Definitions_1bgn225" name="DRD" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="check_amount" name="Check the expense amount">
+    <decisionTable id="decisionTable_1">
+      <input id="input_1" label="Amount">
+        <inputExpression id="inputExpression_1" typeRef="long">
+          <text>amount</text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Need validation" name="validate" typeRef="boolean" />
+      <rule id="DecisionRule_1dun6fh">
+        <inputEntry id="UnaryTests_0ftr1uu">
+          <text>&lt;2000</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0kwwtr6">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0pfgcgu">
+        <description>The manager have to validate the amount</description>
+        <inputEntry id="UnaryTests_1nmcmfh">
+          <text>&gt;2000</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1l51yzr">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

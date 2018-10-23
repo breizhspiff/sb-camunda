@@ -21,6 +21,6 @@ public class SbCamundaApplication {
 
     @EventListener
     private void processPostDeploy(PostDeployEvent event) {
-        runtimeService.startProcessInstanceByKey("bet");
+        runtimeService.startProcessInstanceByKey("expense_validation");
     }
 }

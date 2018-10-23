@@ -19,12 +19,12 @@ import static org.camunda.bpm.extension.mockito.DelegateExpressions.autoMock;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {SbCamundaApplication.class})
-@Deployment(resources = "bet.bpmn")
+@Deployment(resources = "expense_validation.bpmn")
 public class SbCamundaApplicationTestsWithCoverage extends AbstractProcessEngineRuleTest {
 
     @Before
     public void setUp() {
-        autoMock("bet.bpmn");
+        autoMock("expense_validation.bpmn");
     }
 
     @Rule
@@ -36,7 +36,7 @@ public class SbCamundaApplicationTestsWithCoverage extends AbstractProcessEngine
     public void start_and_finish_process() {
 
         Map<String, Object> variables = new HashMap<String, Object>();
-        final ProcessInstance processInstance = rule.getRuntimeService().startProcessInstanceByKey("bet", variables);
+        final ProcessInstance processInstance = rule.getRuntimeService().startProcessInstanceByKey("expense_validation", variables);
 
         List<LockedExternalTask> tasks = rule.getExternalTaskService().fetchAndLock(10, "externalWorkerId")
                 .topic("external-topic", 60L * 1000L)
